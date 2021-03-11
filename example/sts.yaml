@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb
+  namespace: tutorial
+  labels:
+    app: mariadb
+    type: database
+spec:
+  replicas: 1
+  serviceName: "mariadb"
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+        type: database
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      securityContext:
+      containers:
+        - name: mariadb
+          image: hypriot/rpi-mysql:latest
+          ports:
+            - containerPort: 3306
+              name: mariadb
+          volumeMounts:
+          - name: volume
+            mountPath: /var/lib/mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: secret
+            - name: MYSQL_DATABASE
+              value: todos
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_PASSWORD
+              value: secret
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: getting-started

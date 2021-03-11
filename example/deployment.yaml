@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: getting-started
+  namespace: tutorial
+  labels:
+    app: getting-started
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: getting-started
+  template:
+    metadata:
+      labels:
+        app: getting-started
+    spec:
+      containers:
+      - name: getting-started
+        imagePullPolicy: Always
+        image: nilbacardit/iskra:arm
+        ports:
+        - containerPort: 3000
+        env:
+         - name: MYSQL_USER
+           value: root
+         - name: MYSQL_HOST
+           value: mariadb
+         - name: MYSQL_PASSWORD
+           value: secret
+         - name: MYSQL_DB
+           value: todos
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: volume
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: getting-started
